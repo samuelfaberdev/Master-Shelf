@@ -15,4 +15,4 @@ libgl1 \
 libglib2.0-0 \
 && rm -rf /var/lib/apt/lists/*
 
-CMD uvicorn mastershelf.api.fast:app --host 0.0.0.0 --port $PORT
+CMD uvicorn mastershelf.api.fast:app --host 0.0.0.0 --port 9000

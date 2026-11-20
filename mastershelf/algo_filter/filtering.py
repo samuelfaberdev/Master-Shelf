@@ -36,7 +36,7 @@ def get_matching_recipes(user_ingredients_list: dict, pantry_items: list, user_d
       )
 
       SELECT *
-      FROM `wagon-bootcamp-501612-i1.recipes_clean_300.recipes_final_array` r
+      FROM `le-wagon-ds-2327.mastershelf.recipes` r
 
       WHERE ARRAY_LENGTH(r.ingredients_clean) > 0
           AND NOT EXISTS (

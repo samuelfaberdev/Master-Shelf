@@ -1,0 +1,38 @@
+services:
+  frontend:
+    build: ./frontend
+    environment:
+      VITE_BACKEND_URL: "/api"
+    command: sh -c "npm run build"
+    volumes:
+      - web-client-build:/app/dist
+
+  backend:
+    build: ./
+    command: sh -c "npm run start"
+    expose:
+      - 9000
+    environment:
+      GCP_REGION: "europe-west1"
+      GCP_PROJECT: "le-wagon-ds-2327"
+      GAR_IMAGE: "mastershelf"
+    volumes:
+      - ./backend/src/:/app/src/
+
+  nginx:
+    image: nginx:1.21.3
+    depends_on:
+      frontend:
+        condition: service_started
+      backend:
+        condition: service_started
+    restart: always
+    ports:
+      - ${GATEWAY_PORT:-8400}:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - web-client-build:/web-client-build
+      - ./logs:/var/log/nginx
+volumes:
+  web-client-build:
+  my-db:

@@ -8,7 +8,7 @@ def yolo_predict(image):
     username = Path.home().name
 
     print("⏳ Chargement du model Yolo ⏳")
-    model = YOLO(f"models/best.pt")
+    model = YOLO(f"models/epoch30.pt")
     print("✅ Model Yolo chargé ! ✅")
 
     print(f"🔎 Détection d'ingrédient pour l'image :\n{image}")

@@ -1,0 +1,17 @@
+# Dépendances de l'image API uniquement (sans Streamlit, MLflow ni outils de test)
+fastapi==0.108.0
+uvicorn
+python-multipart
+
+ultralytics
+pillow
+numpy
+pandas
+scikit-learn
+
+google-cloud-bigquery
+db_dtypes
+
+# importés au chargement de mastershelf.recipes.preprocessing
+spacy
+sentence_transformers

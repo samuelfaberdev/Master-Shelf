@@ -7,3 +7,9 @@ __pycache__
 .DS_Store
 .vscode
 models/
+
+# Secrets locaux
+credentials/*
+!credentials/.gitkeep
+logs/
+runs/

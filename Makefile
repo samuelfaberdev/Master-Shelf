@@ -17,3 +17,15 @@ test:
 
 run_baseline:
 	python -m mastershelf.main
+
+# --- Déploiement docker compose ---
+COMPOSE = docker compose -f docker-compose.prod.yml --env-file .env
+
+deploy:
+	$(COMPOSE) up -d --build
+
+logs:
+	$(COMPOSE) logs -f
+
+down:
+	$(COMPOSE) down

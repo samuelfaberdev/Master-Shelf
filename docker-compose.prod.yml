@@ -1,0 +1,61 @@
+# Master Shelf — déploiement production
+#
+#   navigateur ──► nginx (:${GATEWAY_PORT}) ──┬──► /       frontend (Streamlit :8501)
+#                                             └──► /api/   api      (FastAPI   :8000)
+#   frontend ──► http://api:8000  (réseau Docker interne)
+#   api      ──► BigQuery (clé de service account montée en lecture seule)
+#
+# Lancement :  docker compose -f docker-compose.prod.yml --env-file .env up -d --build
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mastershelf-api:latest
+    restart: unless-stopped
+    expose:
+      - "8000"
+    environment:
+      PORT: "8000"
+      GCP_PROJECT: ${GCP_PROJECT}
+      GOOGLE_CLOUD_PROJECT: ${GCP_PROJECT}
+      GOOGLE_APPLICATION_CREDENTIALS: /secrets/gcp-key.json
+      YOLO_MODEL_PATH: /app/models/${YOLO_MODEL_FILE:-epoch30.pt}
+    volumes:
+      # Les poids YOLO sont dans .gitignore : on les monte au lieu de les copier dans l'image
+      - ./models:/app/models:ro
+      - ${GCP_CREDENTIALS_FILE:-./credentials/gcp-key.json}:/secrets/gcp-key.json:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: mastershelf-frontend:latest
+    restart: unless-stopped
+    expose:
+      - "8501"
+    environment:
+      # Appel serveur-à-serveur : le front parle à l'API via le réseau Docker
+      SERVICE_URL: http://api:8000
+    depends_on:
+      api:
+        condition: service_healthy
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - "${GATEWAY_PORT:-8400}:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./logs:/var/log/nginx
+    depends_on:
+      - api
+      - frontend

@@ -1,5 +1,4 @@
 import os
-import mlflow
 from ultralytics import YOLO
 from pathlib import Path
 import cv2
@@ -8,7 +7,7 @@ def yolo_predict(image):
     username = Path.home().name
 
     print("⏳ Chargement du model Yolo ⏳")
-    model = YOLO(f"models/best.pt")
+    model = YOLO(os.environ.get("YOLO_MODEL_PATH", "models/epoch30.pt"))
     print("✅ Model Yolo chargé ! ✅")
 
     print(f"🔎 Détection d'ingrédient pour l'image :\n{image}")

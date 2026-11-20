@@ -1,0 +1,13 @@
+.git
+.env
+.envrc
+credentials/
+raw_data/
+models/
+notebooks/
+logs/
+runs/
+**/__pycache__
+*.egg-info
+.DS_Store
+.vscode
